@@ -2,6 +2,7 @@ import babelParser from "@babel/eslint-parser";
 import jsdoc from "eslint-plugin-jsdoc";
 import js from "@eslint/js";
 import globals from "globals";
+import prettierConfig from "eslint-config-prettier";
 
 export default [
     js.configs.recommended,
@@ -126,4 +127,6 @@ export default [
             "no-console": "off"
         }
     },
+    // Disable ESLint stylistic rules that conflict with Prettier
+    prettierConfig,
 ];
