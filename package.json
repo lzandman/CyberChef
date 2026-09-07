@@ -36,6 +36,7 @@
   "browserslist": [
     "Chrome >= 50",
     "Firefox >= 38",
+    "Safari >= 18",
     "node >= 24"
   ],
   "devDependencies": {
