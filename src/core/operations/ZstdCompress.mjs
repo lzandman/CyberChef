@@ -7,7 +7,7 @@
 import Operation from "../Operation.mjs";
 import OperationError from "../errors/OperationError.mjs";
 import { isWorkerEnvironment } from "../Utils.mjs";
-import { zstdInit, compress } from "../lib/Zstd.mjs";
+import { zstdLoad, compress } from "../lib/Zstd.mjs";
 
 /**
  * Zstd Compress operation
@@ -49,14 +49,9 @@ class ZstdCompress extends Operation {
         const level = parseInt(args[0], 10);
         if (input.byteLength === 0) throw new OperationError("Please provide an input.");
         if (isWorkerEnvironment()) self.sendStatusMessage("Loading Zstd...");
-        await zstdInit();
+        const zstd = await zstdLoad();
         if (isWorkerEnvironment()) self.sendStatusMessage("Compressing data...");
-        try {
-            const result = compress(new Uint8Array(input), level);
-            return result.buffer.slice(result.byteOffset, result.byteOffset + result.byteLength);
-        } catch (err) {
-            throw new OperationError(`Failed to compress: ${err.message}`);
-        }
+        return compress(zstd, new Uint8Array(input), level);
     }
 
 }

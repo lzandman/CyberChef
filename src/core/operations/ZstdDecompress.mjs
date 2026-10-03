@@ -7,7 +7,7 @@
 import Operation from "../Operation.mjs";
 import OperationError from "../errors/OperationError.mjs";
 import { isWorkerEnvironment } from "../Utils.mjs";
-import { zstdInit, decompressStream } from "../lib/Zstd.mjs";
+import { zstdLoad, decompress } from "../lib/Zstd.mjs";
 
 /**
  * Zstd Decompress operation
@@ -44,9 +44,9 @@ class ZstdDecompress extends Operation {
     async run(input, args) {
         if (input.byteLength === 0) throw new OperationError("Please provide an input.");
         if (isWorkerEnvironment()) self.sendStatusMessage("Loading Zstd...");
-        await zstdInit();
+        const zstd = await zstdLoad();
         if (isWorkerEnvironment()) self.sendStatusMessage("Decompressing data...");
-        return decompressStream(new Uint8Array(input));
+        return decompress(zstd, new Uint8Array(input));
     }
 
 }

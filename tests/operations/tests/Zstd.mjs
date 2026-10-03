@@ -24,7 +24,7 @@ TestRegister.addTests([
         ]
     },
     {
-        // Generated using: node --input-type=module -e "import {init,compress} from '@bokuweb/zstd-wasm'; await init(); const r=compress(new TextEncoder().encode('The cat sat on the mat.'),3); console.log(Buffer.from(r).toString('hex'));"
+        // Generated using: node --input-type=module -e "import {Zstd} from '@hpcc-js/wasm-zstd'; const z=await Zstd.load(); console.log(Buffer.from(z.compress(new TextEncoder().encode('The cat sat on the mat.'),3)).toString('hex'));"
         name: "Zstd compress: level 3",
         input: "The cat sat on the mat.",
         expectedOutput: "28b52ffd2017b900005468652063617420736174206f6e20746865206d61742e",
@@ -40,7 +40,7 @@ TestRegister.addTests([
         ]
     },
     {
-        // Generated using: node --input-type=module -e "import {init,compress} from '@bokuweb/zstd-wasm'; await init(); const r=compress(new TextEncoder().encode('The cat sat on the mat.'),3); console.log(Buffer.from(r).toString('hex'));"
+        // Generated using: node --input-type=module -e "import {Zstd} from '@hpcc-js/wasm-zstd'; const z=await Zstd.load(); console.log(Buffer.from(z.compress(new TextEncoder().encode('The cat sat on the mat.'),3)).toString('hex'));"
         name: "Zstd decompress: known vector",
         input: "28b52ffd2017b900005468652063617420736174206f6e20746865206d61742e",
         expectedOutput: "The cat sat on the mat.",
@@ -199,6 +199,22 @@ TestRegister.addTests([
         name: "Zstd decompress: truncated input error",
         input: "28b52ffd0458040100c054686520636174207361",
         expectedOutput: "Failed to decompress: the input ends part way through a Zstandard frame.",
+        recipeConfig: [
+            {
+                op: "From Hex",
+                args: ["None"]
+            },
+            {
+                op: "Zstd Decompress",
+                args: []
+            }
+        ]
+    },
+    {
+        // Generated using: for i in $(seq 200); do echo "sample record number $i with some shared text" > s$i; done; zstd --train s* -o dict; printf 'sample record number 7 with some shared text' | zstd -D dict -c | xxd -p | tr -d '\n'
+        name: "Zstd decompress: dictionary frame error",
+        input: "28b52ffd075864e4f8244d000000023c9480b06a0608f04cfd05",
+        expectedOutput: "Failed to decompress: the input was compressed with a dictionary, which is not supported.",
         recipeConfig: [
             {
                 op: "From Hex",
